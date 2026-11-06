@@ -89,6 +89,7 @@
   // A travel leg card for one person going to e.
   function legCard(pid, e, { compact = false } = {}) {
     const key = originKey(pid, e), leg = legFor(key, e), lb = leaveBy(leg, e), url = dirUrl(pid, key, e);
+    if (leg && leg.mins === 0) return ''; // same building: nothing to travel
     const from = originLabel(pid, key), to = e.short || e.title;
     const sugg = leg && leg.source === 'suggested' ? '<span class="badge badge-outline">suggested</span>' : '';
     const edit = editing() && key !== 'hotel' ? `<button class="btn btn-ghost btn-sm" type="button" data-edit-route="${key}" data-to="${e.id}">${leg ? 'Edit route' : 'Set route'}</button>` : '';
@@ -340,7 +341,8 @@
     const items = [];
     const freeBlock = (text, badge = '') => `<div class="free"><span class="ic">${ICON.clock}</span><span class="txt">${text}</span>${badge ? `<span class="badge badge-default">${badge}</span>` : ''}</div>`;
     if (startOf(list[0]) >= 10 * 60 + 30) items.push({ t: 0, free: true, html: freeBlock(`Free until <b>${leaveBy(legFor('hotel', list[0]), list[0]) || list[0].start}</b>`) });
-    items.push({ t: startOf(list[0]) - 1, free: true, html: legCard(p.id, list[0]) });
+    const pushLeg = (t, e) => { const h = legCard(p.id, e); if (h) items.push({ t, free: true, html: h }); };
+    pushLeg(startOf(list[0]) - 1, list[0]);
     list.forEach((e, i) => {
       items.push({ t: startOf(e), html: eventCard(e, { now, person: p.id }) });
       const nx = list[i + 1];
@@ -354,7 +356,7 @@
           const freeMins = lb ? toMin(lb) - endOf(e) : gap;
           if (freeMins >= 45) items.push({ t: endOf(e) + 1, free: true, html: freeBlock(`Free <b>${fromMin(endOf(e))}–${lb || nx.start}</b>`, dur(freeMins)) });
         }
-        items.push({ t: startOf(nx) - 1, free: true, html: legCard(p.id, nx) });
+        pushLeg(startOf(nx) - 1, nx);
       }
     });
     S.markers.filter(m => m.day === day).forEach(m => items.push({ t: toMin(m.time), html: markerCard(m) }));
@@ -443,7 +445,8 @@
       const legs = evs.map((e, i) => {
         const hr = i ? hotelReturn(p.id, e, evs[i - 1]) : null;
         const back = hr ? `<div class="leg-row"><span class="leg-time">${esc(evs[i - 1].end || '')}</span><div class="free hotel"><span class="ic">${ICON.pin}</span><span class="txt"><b>Back to ${esc(hotelLabel(p))}</b> by about ${esc(hr.arrive)} · refresh · leave by <b>${esc(hr.leave)}</b></span><span class="badge badge-default">${dur(hr.window)}</span></div></div>` : '';
-        return `${back}<div class="leg-row"><span class="leg-time">${esc(leaveBy(legFor(originKey(p.id, e), e), e) || '—')}</span>${legCard(p.id, e)}</div>`;
+        const card = legCard(p.id, e);
+        return `${back}${card ? `<div class="leg-row"><span class="leg-time">${esc(leaveBy(legFor(originKey(p.id, e), e), e) || '—')}</span>${card}</div>` : ''}`;
       }).join('');
       return `<div class="day-heading"><h2>${d.label}</h2><span>${d.num} November · ${evs.length ? `${evs.length} legs` : 'nothing scheduled'}</span></div>${legs ? `<div class="card card-compact legs">${legs}</div>` : ''}`;
     }).join('');
