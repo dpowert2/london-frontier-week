@@ -290,9 +290,9 @@ window.FRONTIER_DATA = {
 
     /* ------------------------------------------------------------- Friday */
     { id: 'fri-breakfast', day: 'fri', start: '08:00', end: '09:30', kind: 'session', status: 'confirmed',
-      title: 'Breakfast briefing', short: 'Breakfast',
+      title: 'Breakfast meeting', short: 'Breakfast',
       venue: 'Sheraton Grand London Park Lane', address: 'Private table at the Sheraton, Park Lane', area: 'Park Lane',
-      description: 'Breakfast briefing at a private table at the Sheraton.',
+      description: 'Breakfast meeting at a private table at the Sheraton.',
       actions: [],
       attendees: ['aaron', 'evan', 'richard'], tbc: [],
       travel: { from: 'Sheraton Grand London Park Lane', route: 'In the hotel', duration: '0m',
@@ -519,10 +519,10 @@ window.FRONTIER_DATA = {
       text: 'No venue address, host or travel plan is recorded for the 14:00 Physical AI session beyond “King’s Cross”.' },
     { id: 'issue-13', day: 'thu', severity: 'check', source: 'rebuild', title: 'Ognisko booking time',
       text: 'The restaurant booking is recorded as 19:00–22:00 for 8 people, while the master schedule still has the time as TBC. The app shows 19:00–22:00 as provisional.' },
-    { id: 'issue-14', day: 'fri', severity: 'check', source: 'rebuild', title: 'Breakfast briefing attendees',
+    { id: 'issue-14', day: 'fri', severity: 'check', source: 'rebuild', title: 'Breakfast meeting attendees',
       text: 'The schedule lists Aaron, Evan and Richard. The earlier travel-group list said Richard, Aaron and David.' },
     { id: 'issue-15', day: 'fri', severity: 'check', source: 'rebuild', title: '“Aaron has nothing scheduled”',
-      text: 'The master conflict says Aaron has nothing scheduled on Friday, but the schedule gives him the 08:00 breakfast briefing and the 15:00 Crate debrief. His actual gap is 09:30–15:00.' }
+      text: 'The master conflict says Aaron has nothing scheduled on Friday, but the schedule gives him the 08:00 breakfast meeting and the 15:00 Crate debrief. His actual gap is 09:30–15:00.' }
   ],
 
   dining: [
