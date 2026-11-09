@@ -743,3 +743,8 @@ details.past[open] summary::before { content: '▾ '; }
 .nav-full { display: none; }
 @media (min-width: 900px) and (max-width: 1199px) { .brand-title .long, .brand-sub { display: none; } .nav { gap: 14px; margin-left: 16px; } }
 @media (min-width: 1200px) { .nav { gap: 28px; margin-left: 24px; } .nav-full { display: inline; } .nav-short { display: none; } }
+
+/* Event agenda */
+.agenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.agenda li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: baseline; }
+.agenda-t { font-weight: 700; font-variant-numeric: tabular-nums; }

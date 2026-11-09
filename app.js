@@ -616,6 +616,7 @@
     const tools = ed ? `<div class="sheet-actions"><button class="btn btn-dark btn-sm" type="button" data-edit-event="${e.id}">${ICON.pencil} Edit</button><button class="btn btn-ghost btn-sm" type="button" data-edit-attendance="${e.id}">Attendance</button><button class="btn btn-ghost btn-sm" type="button" data-duplicate-event="${e.id}">Duplicate</button><button class="btn btn-ghost btn-sm danger" type="button" data-delete-event="${e.id}">Delete</button></div>` : '';
     const where = `<div class="sheet-section"><h3>Where</h3><p><b>${esc(e.venue || 'Venue not set')}</b>${e.address ? `<br>${esc(e.address)}` : ''}</p>${q ? `<div class="sheet-actions"><a class="maplink" href="${mapUrl(q)}" target="_blank" rel="noopener">${ICON.pin} Open in Maps</a></div>` : ''}</div>`;
     const about = e.description ? `<div class="sheet-section"><h3>About</h3><p>${esc(e.description)}</p></div>` : '';
+    const agenda = (e.agenda || []).length ? `<div class="sheet-section"><h3>Agenda</h3><ul class="agenda">${e.agenda.map(a => `<li><span class="agenda-t">${esc(a.t)}</span><span>${esc(a.text)}</span></li>`).join('')}</ul>${e.agendaNote ? `<p class="section-meta" style="margin-top:8px">${esc(e.agendaNote)}</p>` : ''}</div>` : '';
     const stars = r => { const full = Math.round(r); return '<span class="stars" aria-hidden="true">' + '★'.repeat(full) + '☆'.repeat(5 - full) + '</span>'; };
     const options = (e.options || []).length ? `<div class="sheet-section"><h3>Where to eat · ${e.options.length} options</h3><div class="opts">${e.options.map(o => `<div class="opt"><div class="opt-head"><b>${esc(o.name)}</b><span class="opt-rating">${stars(o.rating)} ${o.rating.toFixed(1)}${o.price ? ` · ${esc(o.price)}` : ''}</span></div><p>${esc(o.blurb)}</p><div class="opt-foot"><small>${esc(o.address)}</small><a class="maplink" href="${mapUrl(`${o.name}, ${o.address}, London`)}" target="_blank" rel="noopener">${ICON.pin} Map</a></div></div>`).join('')}</div><p class="section-meta" style="margin-top:8px">Google ratings as of ${esc(S.meta.updated)}; check opening hours before booking.</p></div>` : '';
     const t = e.travel || {};
@@ -640,7 +641,7 @@
     openSheet(`<div class="sheet-kicker">${d ? d.label : ''} · ${esc(timeLabel(e))} ${status}${isNow(e, now) ? '<span class="badge badge-dark">Now</span>' : ''}</div>
       <h2 id="sheetTitle">${esc(e.title)}</h2>
       <p class="sheet-sub">${esc(venueLine(e))}</p>
-      ${tools}${hosting}${where}${about}${meeting}${options}${travel}${org}${who}${rest}${meta}`);
+      ${tools}${hosting}${where}${about}${agenda}${meeting}${options}${travel}${org}${who}${rest}${meta}`);
   }
 
   function personSheet(id) {
