@@ -690,7 +690,8 @@ details.past[open] summary::before { content: '▾ '; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   line-height: 1.2; letter-spacing: -0.1px;
 }
-@media (max-width: 359px) { .bn-item { font-size: 9.5px; } }
+@media (max-width: 389px) { .bn-item { font-size: 9.5px; } .bn-item span { letter-spacing: -0.2px; } }
+@media (max-width: 339px) { .bn-item { font-size: 9px; } }
 .bn-item.active { color: var(--text-primary); }
 .bn-badge { position: absolute; top: 8px; left: calc(50% + 6px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; font-style: normal; display: grid; place-items: center; }
 .bn-badge[hidden] { display: none; }
