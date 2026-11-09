@@ -1,11 +1,11 @@
 /* Offline shell for London Frontier Week.
    Network first, cache fallback: online users always get the latest data.js;
    offline users (on the Tube, say) get the last version they loaded. */
-const CACHE = 'frontier-week-v2';
+const CACHE = 'frontier-week-v3';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './store.js', './data.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -13,7 +13,9 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request).then(res => {
+    // cache: 'no-cache' revalidates with the server, so a fresh deploy shows up straight away
+    // instead of after GitHub Pages' 10-minute browser cache.
+    fetch(e.request, { cache: 'no-cache' }).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return res;
