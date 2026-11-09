@@ -748,3 +748,5 @@ details.past[open] summary::before { content: '▾ '; }
 .agenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .agenda li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: baseline; }
 .agenda-t { font-weight: 700; font-variant-numeric: tabular-nums; }
+.mc-links { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.mc-site { color: inherit; }

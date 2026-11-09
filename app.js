@@ -50,7 +50,7 @@
     const meta = [c.role, c.org].filter(Boolean).join(' · ');
     return `<div class="mc"><div class="mc-head"><span class="avatar other" aria-hidden="true">${initials(c)}</span><div class="mc-id"><span class="mc-name">${esc(c.name)}</span>${meta ? `<span class="mc-role">${esc(meta)}</span>` : ''}</div>${c.here && c.here.as ? `<span class="badge badge-default">${esc(c.here.as)}</span>` : ''}</div>
       ${c.bio ? `<p class="mc-bio">${esc(c.bio)}</p>` : ''}${c.here && c.here.note ? `<p class="mc-bio"><b>${esc(c.here.note)}</b></p>` : ''}
-      ${c.url ? `<a class="mc-link" href="${esc(c.url)}" target="_blank" rel="noopener">${LINKEDIN} LinkedIn</a>` : ''}</div>`;
+      ${c.url || c.site ? `<div class="mc-links">${c.url ? `<a class="mc-link" href="${esc(c.url)}" target="_blank" rel="noopener">${LINKEDIN} LinkedIn</a>` : ''}${c.site ? `<a class="mc-link mc-site" href="${esc(c.site)}" target="_blank" rel="noopener">${ICON.ext} ${esc(c.site.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>` : ''}</div>` : ''}</div>`;
   }
   function hostBlock(e) {
     const hosts = hostsOf(e);
