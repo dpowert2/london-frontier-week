@@ -4,7 +4,7 @@
    copy (read-only) or the shared store behind the claude.ai artifact (live,
    editable by people the artifact is shared with at Contributor or above).
 
-   Views: schedule · board (who's where) · people · logistics · issues
+   Views: schedule · board (who's where) · people · meet (who you'll meet) · logistics · issues
    State lives in the URL hash so any view can be shared as a link:
      #schedule-wed-as-ger   → Wednesday schedule, viewed as Ger Bogan
    ========================================================================== */
@@ -42,6 +42,21 @@
   const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'item';
   const nameList = ids => ids.map(id => P[id] ? P[id].name : id).join(', ');
   const doneActions = e => new Set(e.actionsDone || []);
+  // FCAT hosts (person ids) and the people the group meets at an event (from data.js contacts).
+  const hostsOf = e => (e.fcatHosts || []).filter(id => P[id]);
+  const contactsFor = eid => (S.contacts || []).filter(c => (c.at || []).some(a => a.e === eid)).map(c => ({ ...c, here: c.at.find(a => a.e === eid) }));
+  const LINKEDIN = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zM9.5 9.75h3.8v1.5h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1v5.45h-4v-4.83c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.85 1.25-1.85 2.55v4.91h-4z"/></svg>';
+  function contactCard(c) {
+    const meta = [c.role, c.org].filter(Boolean).join(' · ');
+    return `<div class="mc"><div class="mc-head"><span class="avatar other" aria-hidden="true">${initials(c)}</span><div class="mc-id"><span class="mc-name">${esc(c.name)}</span>${meta ? `<span class="mc-role">${esc(meta)}</span>` : ''}</div>${c.here && c.here.as ? `<span class="badge badge-default">${esc(c.here.as)}</span>` : ''}</div>
+      ${c.bio ? `<p class="mc-bio">${esc(c.bio)}</p>` : ''}${c.here && c.here.note ? `<p class="mc-bio"><b>${esc(c.here.note)}</b></p>` : ''}
+      ${c.url ? `<a class="mc-link" href="${esc(c.url)}" target="_blank" rel="noopener">${LINKEDIN} LinkedIn</a>` : ''}</div>`;
+  }
+  function hostBlock(e) {
+    const hosts = hostsOf(e);
+    if (!hosts.length && !e.meet) return '';
+    return `<div class="host-box">${hosts.length ? `<div class="host-row"><b>FCAT host</b><span class="chips">${hosts.map(id => personChip(P[id])).join('')}</span></div>` : ''}${e.meet ? `<div class="host-row"><b>Meet</b><span>${esc(e.meet)}</span></div>` : ''}</div>`;
+  }
   // Stream colours: one colour per area, assigned per day in order of first appearance.
   const PALETTE = [['#7B9BB5', '#E9EFF5'], ['#3F8F8A', '#E2F1EF'], ['#C9962A', '#FBF1DB'], ['#7A6BBF', '#ECE9F7'], ['#C45C7D', '#F8E6EC'], ['#7F9A3E', '#EEF3DF'], ['#4F6DA8', '#E6EBF6'], ['#C2693A', '#F8E8E0']];
   const streamName = e => (e.area || '').trim(); // sessions without an area stay grey
@@ -139,9 +154,9 @@
   const isNow = (e, now) => now.dayId === e.day && startOf(e) <= now.mins && now.mins < endOf(e);
 
   /* ------------------------------------------------------------- state */
-  const TABS = ['schedule', 'board', 'people', 'logistics', 'issues', 'daysheet'];
-  const TAB_HAS_DAY = { schedule: true, board: true, people: false, logistics: false, issues: true, daysheet: true };
-  const state = { tab: 'schedule', day: null, person: null, threshold: 120, peopleFilter: 'all', peopleQuery: '', fakeNow: null, edit: false };
+  const TABS = ['schedule', 'board', 'people', 'meet', 'logistics', 'issues', 'daysheet'];
+  const TAB_HAS_DAY = { schedule: true, board: true, people: false, meet: false, logistics: false, issues: true, daysheet: true };
+  const state = { tab: 'schedule', day: null, person: null, threshold: 120, peopleFilter: 'all', peopleQuery: '', meetQuery: '', fakeNow: null, edit: false };
 
   // Hash format (plain names only, so links survive every host):
   //   #schedule-wed              Wednesday schedule
@@ -211,6 +226,7 @@
       <div class="ev-top"><span class="ev-time">${esc(timeLabel(e))}</span>${flags.join('')}</div>
       <div class="ev-title">${esc(e.title)}</div>
       <div class="ev-venue">${ICON.pin}<span>${esc(venueLine(e))}</span></div>
+      ${hostsOf(e).length ? `<div class="ev-host">FCAT host <b>${esc(hostsOf(e).map(id => first(P[id])).join(' & '))}</b>${e.meet ? ' · meeting point set' : ''}</div>` : ''}
       <div class="ev-foot">${person ? '<span></span>' : attendeeSummary(e) + leave}</div>
     </button>`;
   }
@@ -469,7 +485,7 @@
     }).join('');
     const dining = S.dining.map(d => `<div class="card card-compact dc">
       <div class="dc-head"><div><h3>${esc(d.name)}</h3><div class="when">${esc(d.day)} · ${esc(d.time)}</div></div><span class="badge badge-default">${esc(d.type || '')}</span></div>
-      <div class="kv"><b>Booking</b><span>${esc(d.booking || '')}</span><b>Address</b><span>${esc(d.address || '')}</span><b>Contact</b><span>${linkify(d.contact || '')}</span></div>
+      <div class="kv">${d.fcatHost ? `<b>FCAT host</b><span>${esc(d.fcatHost)}</span>` : ''}${d.meet ? `<b>Meet</b><span>${esc(d.meet)}</span>` : ''}<b>Booking</b><span>${esc(d.booking || '')}</span><b>Address</b><span>${esc(d.address || '')}</span><b>Contact</b><span>${linkify(d.contact || '')}</span></div>
       <div class="tc-foot"><span style="display:flex;gap:6px">${d.mapQuery || d.address ? `<a class="maplink" href="${mapUrl(d.mapQuery || d.address)}" target="_blank" rel="noopener">${ICON.pin} Open in Maps</a>` : ''}${d.eventId && E[d.eventId] ? `<button class="btn btn-ghost btn-sm" type="button" data-open-event="${d.eventId}">Who’s going</button>` : ''}</span>${editing() ? `<button class="btn btn-ghost btn-sm" type="button" data-edit-dining="${d.id}">Edit</button>` : ''}</div>
     </div>`).join('');
     const head = viewer ? `<div class="person-head">${avatar(viewer, 'lg')}<div><h2>${esc(viewer.name)}’s travel plan</h2><p>Starting from ${esc(hotelLabel(viewer))} each day, then from the previous session</p></div><button class="btn btn-ghost btn-sm" type="button" data-set-person="">Everyone</button></div>` : '';
@@ -608,8 +624,12 @@
       ${groups.map(g => `<div class="origin-group"><div class="chips" style="margin-bottom:6px">${g.people.map(id => `<span class="chip chip-static">${avatar(P[id])}${esc(first(P[id]))}</span>`).join('')}</div>${legCard(g.pid, e)}</div>`).join('') || `<p>No one assigned yet.</p>`}
       ${t.onward ? `<p class="sheet-note" style="margin-top:10px">${esc(t.onward)}</p>` : ''}</div>` : '';
     const dn = doneActions(e);
+    const hb = hostBlock(e);
+    const hosting = hb ? `<div class="sheet-section"><h3>FCAT host and meeting point</h3>${hb}</div>` : '';
+    const cs = contactsFor(e.id);
+    const meeting = cs.length || e.alsoMeeting ? `<div class="sheet-section"><h3>Who you’ll meet${cs.length ? ` · ${cs.length}` : ''}</h3>${cs.length ? `<div class="meet-grid">${cs.map(contactCard).join('')}</div>` : ''}${e.alsoMeeting ? `<p class="sheet-note" style="margin-top:10px">${esc(e.alsoMeeting)}</p>` : ''}</div>` : '';
     const org = (e.host || (e.actions || []).length || e.notes) ? `<div class="sheet-section"><h3>Organisation</h3>
-      ${e.host ? `<div class="kv" style="margin-bottom:8px"><b>Host</b><span>${esc(e.host)}</span></div>` : ''}
+      ${e.host ? `<div class="kv" style="margin-bottom:8px"><b>Hosted by</b><span>${esc(e.host)}</span></div>` : ''}
       ${(e.actions || []).length ? `<ul class="sheet-list">${e.actions.map(a => `<li class="${dn.has(a) ? 'done' : ''}">${esc(a)}${dn.has(a) ? ' <span class="badge badge-ok">done</span>' : ''}</li>`).join('')}</ul>` : ''}
       ${e.notes ? `<p class="sheet-note" style="margin-top:10px">${esc(e.notes)}</p>` : ''}</div>` : '';
     const who = `<div class="sheet-section"><h3>Who’s going · ${att.length}</h3><div class="chips">${att.map(id => P[id] ? personChip(P[id], (e.tbc || []).includes(id)) : '').join('') || '<p>No one assigned yet.</p>'}</div></div>`;
@@ -620,7 +640,7 @@
     openSheet(`<div class="sheet-kicker">${d ? d.label : ''} · ${esc(timeLabel(e))} ${status}${isNow(e, now) ? '<span class="badge badge-dark">Now</span>' : ''}</div>
       <h2 id="sheetTitle">${esc(e.title)}</h2>
       <p class="sheet-sub">${esc(venueLine(e))}</p>
-      ${tools}${where}${about}${options}${travel}${org}${who}${rest}${meta}`);
+      ${tools}${hosting}${where}${about}${meeting}${options}${travel}${org}${who}${rest}${meta}`);
   }
 
   function personSheet(id) {
@@ -766,7 +786,9 @@
         { key: 'venue', label: 'Venue' },
         { key: 'address', label: 'Address', half: true },
         { key: 'area', label: 'Area', half: true, placeholder: 'e.g. Canary Wharf' },
-        { key: 'host', label: 'Host' },
+        { key: 'host', label: 'Hosted by', help: 'The organisation or people hosting' },
+        { key: 'fcatHostNames', label: 'FCAT host', half: true, placeholder: 'e.g. Ger, Magda', help: 'First names, comma separated' },
+        { key: 'meet', label: 'Meeting point', half: true, placeholder: 'e.g. Sheraton lobby at 08:20' },
         { key: 'description', label: 'About', type: 'textarea' },
         { key: 'notes', label: 'Briefing notes', type: 'textarea', rows: 2 },
         { key: 'actions', label: 'To confirm (one per line)', type: 'lines', rows: 3 },
@@ -779,7 +801,7 @@
         { key: 't_arrive', label: 'Arrive for', half: true, placeholder: 'defaults to the start time' },
         { key: 't_onward', label: 'Then', type: 'textarea', rows: 2 }
       ],
-      values: { ...v, options: (v.options || []).map(o => [o.name, o.rating, o.price, o.address, o.blurb].join(' | ')), att: { attendees: v.attendees || [], tbc: v.tbc || [] }, t_depart: t.depart, t_from: t.from, t_route: t.route, t_duration: t.duration, t_arrive: t.arrive, t_onward: t.onward },
+      values: { ...v, fcatHostNames: (v.fcatHosts || []).filter(id => P[id]).map(id => first(P[id])).join(', '), options: (v.options || []).map(o => [o.name, o.rating, o.price, o.address, o.blurb].join(' | ')), att: { attendees: v.attendees || [], tbc: v.tbc || [] }, t_depart: t.depart, t_from: t.from, t_route: t.route, t_duration: t.duration, t_arrive: t.arrive, t_onward: t.onward },
       onDelete: isNew ? null : () => deleteEvent(v.id),
       onSubmit: async f => {
         if (!(await revGuard('events', isNew ? null : v.id, v.rev))) return;
@@ -787,7 +809,7 @@
         const hasTravel = Object.values(travel).some(Boolean);
         const id = isNew ? `${f.day}-${slug(f.title)}-${Math.random().toString(36).slice(2, 5)}` : v.id;
         const options = f.options.map(l => { const [name, rating, price, address, blurb] = l.split('|').map(x => x.trim()); return { name, rating: +rating || 0, price: price || '', address: address || '', blurb: blurb || '' }; }).filter(o => o.name);
-        const doc = { ...v, id, options, title: f.title, short: f.short || f.title.split(/[—:+(]/)[0].trim().slice(0, 18), day: f.day, start: f.start, end: f.end || null, timeTbc: f.timeTbc, status: f.status, kind: f.kind, venue: f.venue, address: f.address, area: f.area, host: f.host, description: f.description, notes: f.notes, actions: f.actions, actionsDone: (v.actionsDone || []).filter(a => f.actions.includes(a)), attendees: f.att.attendees, tbc: f.att.tbc };
+        const doc = { ...v, id, options, title: f.title, short: f.short || f.title.split(/[—:+(]/)[0].trim().slice(0, 18), day: f.day, start: f.start, end: f.end || null, timeTbc: f.timeTbc, status: f.status, kind: f.kind, venue: f.venue, address: f.address, area: f.area, host: f.host, fcatHosts: f.fcatHostNames.split(',').map(x => x.trim().toLowerCase()).filter(Boolean).map(n => (PEOPLE.find(p => p.id === n || p.name.toLowerCase() === n || first(p).toLowerCase() === n) || {}).id).filter(Boolean), meet: f.meet, description: f.description, notes: f.notes, actions: f.actions, actionsDone: (v.actionsDone || []).filter(a => f.actions.includes(a)), attendees: f.att.attendees, tbc: f.att.tbc };
         if (hasTravel) doc.travel = travel; else delete doc.travel;
         await window.Store.apply([{ col: 'events', id, data: doc }], isNew ? `Added ${f.title} (${DAY[f.day].short} ${f.start})` : `Edited ${f.title}`);
         navigate({ day: f.day, tab: state.tab === 'board' ? 'board' : 'schedule' });
@@ -975,13 +997,41 @@
   function viewDaysheet() {
     const day = state.day, d = DAY[day];
     const evs = eventsOn(day);
-    const rows = evs.map(e => `<div class="ds-row"><div class="ds-time">${esc(timeLabel(e))}</div><div><b>${esc(e.title)}</b>${e.status === 'tbc' ? ' (TBC)' : ''}<br><span class="ds-venue">${esc(venueLine(e))}${e.address ? `, ${esc(e.address)}` : ''}</span>${e.travel && e.travel.depart ? `<br><span class="ds-venue">Leave ${esc(e.travel.depart)}${e.travel.from ? ` from ${esc(e.travel.from)}` : ''}; ${esc(e.travel.route || '')}</span>` : ''}<br><span class="ds-who">${nameList(e.attendees || [])}${(e.tbc || []).length ? ` (TBC: ${nameList(e.tbc)})` : ''}</span>${(e.actions || []).length ? `<br><span class="ds-venue">To confirm: ${e.actions.map(esc).join('; ')}</span>` : ''}</div></div>`).join('');
+    const rows = evs.map(e => `<div class="ds-row"><div class="ds-time">${esc(timeLabel(e))}</div><div><b>${esc(e.title)}</b>${e.status === 'tbc' ? ' (TBC)' : ''}<br><span class="ds-venue">${esc(venueLine(e))}${e.address ? `, ${esc(e.address)}` : ''}</span>${e.travel && e.travel.depart ? `<br><span class="ds-venue">Leave ${esc(e.travel.depart)}${e.travel.from ? ` from ${esc(e.travel.from)}` : ''}; ${esc(e.travel.route || '')}</span>` : ''}${hostsOf(e).length || e.meet ? `<br><span class="ds-venue">${hostsOf(e).length ? `FCAT host: ${esc(nameList(hostsOf(e)))}` : ''}${hostsOf(e).length && e.meet ? '. ' : ''}${e.meet ? `Meet: ${esc(e.meet)}` : ''}</span>` : ''}<br><span class="ds-who">${nameList(e.attendees || [])}${(e.tbc || []).length ? ` (TBC: ${nameList(e.tbc)})` : ''}</span>${(e.actions || []).length ? `<br><span class="ds-venue">To confirm: ${e.actions.map(esc).join('; ')}</span>` : ''}</div></div>`).join('');
     const people = PEOPLE.map(p => `<div class="ds-row"><div class="ds-time">${esc(p.name)}</div><div>${personEvents(p.id, day).map(e => `${esc(e.start)} ${esc(e.short || e.title)}`).join(' · ') || '<i>nothing scheduled</i>'}</div></div>`).join('');
     return `<div class="daysheet"><h1>${esc(S.meta.title)} · ${d.label} ${d.num} November</h1><p class="section-meta">Plain day sheet for printing or a screenshot. <a href="#schedule-${day}">Back to the app</a></p>
       <h2>Sessions</h2>${rows}<h2>By person</h2>${people}
       <h2>Open items</h2>${S.issues.filter(i => i.day === day && !i.done).map(i => `<div class="ds-row"><div class="ds-time">${esc(i.severity)}</div><div><b>${esc(i.title)}</b><br>${esc(i.text)}</div></div>`).join('') || '<p>None.</p>'}</div>`;
   }
-  const VIEWS = { schedule: viewSchedule, board: viewBoard, people: viewPeople, logistics: viewLogistics, issues: viewIssues, daysheet: viewDaysheet };
+  /* -------------------------------------------------------------- meet */
+  function meetMatches(c, q) { return !q || `${c.name} ${c.role} ${c.org} ${c.bio}`.toLowerCase().includes(q); }
+  function meetList() {
+    const q = state.meetQuery.trim().toLowerCase(), viewer = state.person;
+    const out = DAYS.map(d => {
+      const blocks = eventsOn(d.id).filter(e => !viewer || (e.attendees || []).includes(viewer) || hostsOf(e).includes(viewer)).map(e => {
+        const cs = contactsFor(e.id).filter(c => meetMatches(c, q));
+        const also = e.alsoMeeting && (!q || e.alsoMeeting.toLowerCase().includes(q)) ? e.alsoMeeting : '';
+        if (!cs.length && !also) return '';
+        return `<section class="card card-compact meet-block">
+          <button class="meet-event" type="button" data-open-event="${e.id}"><span class="meet-time">${esc(timeLabel(e))}</span><span class="meet-title">${esc(e.title)}</span><span class="meet-venue">${esc(venueLine(e))}</span></button>
+          ${hostBlock(e)}
+          ${cs.length ? `<div class="meet-grid">${cs.map(contactCard).join('')}</div>` : ''}
+          ${also ? `<p class="sheet-note">${esc(also)}</p>` : ''}
+        </section>`;
+      }).filter(Boolean);
+      return blocks.length ? `<div class="day-heading"><h2>${d.label}</h2><span>${d.num} November</span></div>${blocks.join('')}` : '';
+    }).join('');
+    return out || `<div class="card empty"><strong>No one matches</strong>${q ? 'Try a shorter search.' : 'No contacts are listed for these sessions yet.'}</div>`;
+  }
+  function viewMeet() {
+    const viewer = state.person ? P[state.person] : null;
+    const total = (S.contacts || []).length;
+    const head = viewer ? `<div class="person-head">${avatar(viewer, 'lg')}<div><h2>Who ${esc(first(viewer))} will meet</h2><p>Sessions ${esc(first(viewer))} attends or hosts</p></div><button class="btn btn-ghost btn-sm" type="button" data-set-person="">Everyone</button></div>`
+      : `<div class="section-head"><span class="section-title">Who you’ll meet</span><span class="section-meta">${total} people across the week · tap a session for its details</span></div>`;
+    return `${head}<div class="search-wrap">${ICON.search}<input class="search" id="meetSearch" type="search" placeholder="Search by name, organisation or topic" value="${esc(state.meetQuery)}" autocomplete="off"></div>
+      <div id="meetList">${meetList()}</div>`;
+  }
+  const VIEWS = { schedule: viewSchedule, board: viewBoard, people: viewPeople, meet: viewMeet, logistics: viewLogistics, issues: viewIssues, daysheet: viewDaysheet };
   function render() {
     sync();
     if (state.person && !P[state.person]) state.person = null;
@@ -990,7 +1040,7 @@
     document.body.classList.toggle('editing', editing());
     document.body.dataset.mode = S.mode;
     $('#main').innerHTML = VIEWS[state.tab]();
-    document.title = `${S.meta.title} · ${({ schedule: 'Schedule', board: 'Who’s where', people: 'People', logistics: 'Travel & stays', issues: 'Open items', daysheet: 'Day sheet' })[state.tab]}`;
+    document.title = `${S.meta.title} · ${({ schedule: 'Schedule', board: 'Who’s where', people: 'People', meet: 'Who you’ll meet', logistics: 'Travel & stays', issues: 'Open items', daysheet: 'Day sheet' })[state.tab]}`;
     const badge = $('#issuesBadge');
     const n = S.issues.filter(i => i.day === state.day && !i.done && i.severity === 'critical').length;
     badge.hidden = !n; badge.textContent = n;
@@ -1006,7 +1056,7 @@
     if ('sheetBack' in ds) { const fn = sheetStack.pop(); if (fn) { const keep = sheetStack.slice(); fn(); sheetStack.length = 0; sheetStack.push(...keep); } else closeSheet(); return; }
     if (ds.openEvent) { ev.preventDefault(); eventSheet(ds.openEvent); return; }
     if (ds.openPerson) { ev.preventDefault(); personSheet(ds.openPerson); return; }
-    if ('setPerson' in ds) { ev.preventDefault(); closeSheet(); navigate({ person: ds.setPerson || null, tab: ['schedule', 'board', 'logistics'].includes(state.tab) ? state.tab : 'schedule' }, { push: true }); return; }
+    if ('setPerson' in ds) { ev.preventDefault(); closeSheet(); navigate({ person: ds.setPerson || null, tab: ['schedule', 'board', 'logistics', 'meet'].includes(state.tab) ? state.tab : 'schedule' }, { push: true }); return; }
     if (ds.editRoute) { routeForm(ds.editRoute, ds.to); return; }
     if (ds.addToSession) { addToSessionSheet(ds.addToSession, ds.day); return; }
     if ('now' in ds) { navigate({ day: londonNow().dayId || state.day, tab: state.tab === 'board' ? 'board' : 'schedule' }); scrollToNow(); return; }
@@ -1035,6 +1085,7 @@
     if ('undo' in ds) { guard(async () => { const what = await window.Store.undo(); toast(what ? `Undone: ${what}` : 'Nothing to undo'); })(); return; }
   });
   document.addEventListener('input', ev => {
+    if (ev.target.id === 'meetSearch') { state.meetQuery = ev.target.value; const box = $('#meetList'); if (box) box.innerHTML = meetList(); return; }
     if (ev.target.id === 'peopleSearch') {
       state.peopleQuery = ev.target.value;
       const grid = $('#peopleGrid'); if (!grid) return;

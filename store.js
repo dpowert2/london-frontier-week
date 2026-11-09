@@ -33,7 +33,8 @@ window.Store = (() => {
     isOwner: false,
     me: null,                // { id, name, ... } or null
     people: [], events: [], issues: [], dining: [], routes: [], log: [],
-    markers: seed.markers, days: seed.days, hotels: seed.hotels, meta: seed.meta
+    markers: seed.markers, days: seed.days, hotels: seed.hotels, meta: seed.meta,
+    contacts: seed.contacts || []   // people the group meets; read-only, always from data.js
   };
   const listeners = new Set();
   const emit = () => listeners.forEach(fn => { try { fn(state); } catch (e) { console.error(e); } });
@@ -203,7 +204,7 @@ window.Store = (() => {
   function exportJson() {
     return JSON.stringify({
       meta: state.meta, days: state.days, hotels: state.hotels,
-      people: state.people, events: state.events, routes: state.routes, markers: state.markers, issues: state.issues, dining: state.dining
+      people: state.people, events: state.events, routes: state.routes, markers: state.markers, issues: state.issues, dining: state.dining, contacts: state.contacts
     }, null, 2);
   }
 
