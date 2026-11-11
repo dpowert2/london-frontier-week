@@ -167,6 +167,12 @@ window.FRONTIER_DATA = {
       venue: 'Level39', address: 'One Canada Square, Canary Wharf E14 5AB', area: 'Canary Wharf',
       description: 'An innovation ecosystem visit at Level39 in Canary Wharf, including meetings with companies and ecosystem partners based in the fintech and enterprise technology community.',
       host: 'Magda Kron / Amy French / Mairi Dillon',
+      agenda: [
+        { t: '14:00', text: 'Meet at Level39' },
+        { t: '14:05', text: 'Marketing Suite tour and ONQ/LSH overview' },
+        { t: '14:30', text: 'Level39 tour and coffee' },
+        { t: '15:00', text: 'Adi Ben-Ari, CEO of Applied Blockchain, joins the group' }
+      ],
       actions: ['Utah guests included', 'Briefing says to add Will, Ger and Brittany (the schedule has them at the Frontier AI session with Ofer; see Issues)'],
       notes: 'Health–wealth, cyber, AI security and fintech tracks. Deanna and Danielle arrive separately from NPL.',
       attendees: ['deanna', 'danielle', 'aaron', 'magda', 'hannah', 'cydni', 'nick'], tbc: [],
@@ -589,6 +595,9 @@ window.FRONTIER_DATA = {
     { id: 'mairi-dillon', name: 'Mairi Dillon', role: 'Associate Director, Science Ecosystem', org: 'Canary Wharf Group', at: [{ e: 'wed-level39', as: 'Host' }],
       bio: 'Leads ecosystem development for Canary Wharf Life Sciences. Previously built Kadans Science Partner’s UK ecosystem strategy; earlier roles across the Catapult Network and Innovate UK’s Knowledge Transfer Network.',
       url: 'https://www.linkedin.com/in/mairi-dillon-3865ba38' },
+    { id: 'adi-ben-ari', name: 'Adi Ben-Ari', role: 'Founder and CEO', org: 'Applied Blockchain', at: [{ e: 'wed-level39', as: 'Joining', note: 'Joins the group at 15:00' }],
+      bio: 'Founded Applied Blockchain in 2015; the London- and Porto-based firm builds blockchain, zero-knowledge and confidential-computing solutions for enterprises. 20+ years in enterprise software.',
+      url: 'https://www.linkedin.com/in/adibenari/', site: 'https://www.appliedblockchain.com' },
     { id: 'stefano-minini', name: 'Stefano Minini', role: 'Project Director, Science and Tech (Europe)', org: 'Lendlease', at: [{ e: 'wed-kingscross', as: 'Host' }],
       bio: 'Leads Lendlease’s science and tech projects in Europe, including EustonX.' },
     { id: 'jenny-sawyer', name: 'Jenny Sawyer', role: 'Project Lead', org: 'Lendlease', at: [{ e: 'wed-kingscross', as: 'Host' }],
