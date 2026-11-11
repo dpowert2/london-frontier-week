@@ -399,17 +399,14 @@ window.FRONTIER_DATA = {
     /* ----------------------------------------------------------- Lunches
        Added after checking who is free around midday and where they are. Marked TBC
        until the organisers confirm; areas are suggestions, not bookings. */
-    { id: 'wed-lunch-soho', day: 'wed', start: '12:00', end: '13:15', kind: 'social', status: 'tbc', lunch: true, toHotel: 'about 20m',
-      title: 'Lunch · Soho', short: 'Lunch (Soho)',
-      venue: 'Soho, near Broadwick Street', address: 'Berwick Street, Soho, London W1F', area: 'Soho',
-      description: 'The ElevenLabs group is already in Soho at 12:00 and nobody has to leave before 13:25 (Aaron to Level39) or 13:35 (Will and Brittany to King’s Cross). Berwick Street and Kingly Court are a two-minute walk and have plenty of quick options.',
-      actions: ['No booking needed for three or four; book if the group grows'],
-      options: [
-        { name: 'Bubala Soho', rating: 4.7, price: '££', address: '15 Poland St, W1F 8QE', blurb: 'Vegetarian Middle Eastern small plates, good for sharing across a table of three or four; two minutes from Broadwick Street.' },
-        { name: 'Bocconcino Soho', rating: 4.7, price: '£££', address: '59 Great Marlborough St, W1F 7JY', blurb: 'Sit-down Italian with a proper lunch menu; the choice if the group wants a quieter table and a longer conversation.' },
-        { name: 'Banana Tree Soho', rating: 4.6, price: '££', address: '103 Wardour St, W1F 0UG', blurb: 'Fast Southeast Asian dishes, quick service and easy to get into without booking; suits a tight turnaround before leaving at 13:25.' }
-      ],
-      attendees: ['will', 'aaron', 'brittany'], tbc: [] },
+    { id: 'wed-lunch-soho', day: 'wed', start: '12:00', end: '13:15', kind: 'social', status: 'confirmed', lunch: true, toHotel: 'about 20m',
+      title: 'Lunch at Dishoom Carnaby', short: 'Lunch (Dishoom)',
+      venue: 'Dishoom Carnaby', address: '22 Kingly St, Carnaby, London W1B 5QP', area: 'Soho',
+      description: 'Lunch at Dishoom Carnaby, about a five-minute walk from ElevenLabs on Broadwick Street. Afterwards Will and Brittany walk to Oxford Circus and take the Victoria line to King’s Cross St Pancras to meet Ger at 13:45; Aaron heads to Level39.',
+      actions: [],
+      attendees: ['will', 'aaron', 'brittany'], tbc: [],
+      travel: { from: 'ElevenLabs, 33 Broadwick St', route: 'Walk via Marshall Street and Great Marlborough Street to Kingly Street', duration: 'about 5m',
+        onward: 'Will and Brittany: Oxford Circus → Victoria line to King’s Cross St Pancras, leaving by about 13:15.' } },
     { id: 'wed-lunch-spitalfields', day: 'wed', start: '12:00', end: '13:15', kind: 'social', status: 'confirmed', lunch: true, toHotel: 'about 30m',
       title: 'Lunch · Shoreditch', short: 'Lunch (Shoreditch)',
       venue: 'Shoreditch, by Old Spitalfields Market', address: '16 Horner Square, London E1 6EW', area: 'Shoreditch',
@@ -471,8 +468,9 @@ window.FRONTIER_DATA = {
   /* Legs between sessions (hotel legs live on each event's `travel`). `source: 'briefing'` is from the
      master; `source: 'suggested'` is a sensible route added while rebuilding, to be confirmed. */
   routes: [
-    { id: 'wed-lunch-soho__wed-level39', from: 'wed-lunch-soho', to: 'wed-level39', route: 'Walk to Tottenham Court Road, then Elizabeth line to Canary Wharf', duration: 'about 30m', source: 'suggested' },
-    { id: 'wed-lunch-soho__wed-physicalai', from: 'wed-lunch-soho', to: 'wed-physicalai', route: 'Walk to Tottenham Court Road, then Northern line to King’s Cross St Pancras', duration: 'about 20m', source: 'suggested' },
+    { id: 'wed-elevenlabs__wed-lunch-soho', from: 'wed-elevenlabs', to: 'wed-lunch-soho', route: 'Walk via Marshall Street and Great Marlborough Street to Dishoom, 22 Kingly Street', duration: 'about 5m', depart: '12:00', source: 'suggested' },
+    { id: 'wed-lunch-soho__wed-level39', from: 'wed-lunch-soho', to: 'wed-level39', route: 'Walk to Bond Street (about 10 minutes), then Elizabeth line to Canary Wharf', duration: 'about 35m', source: 'suggested' },
+    { id: 'wed-lunch-soho__wed-physicalai', from: 'wed-lunch-soho', to: 'wed-physicalai', route: 'Walk to Oxford Circus (about 3 minutes), then Victoria line to King’s Cross St Pancras to meet Ger at 13:45', duration: 'about 20m', depart: '13:15', source: 'suggested' },
     { id: 'wed-lunch-spitalfields__wed-level39', from: 'wed-lunch-spitalfields', to: 'wed-level39', route: 'Liverpool Street, then Elizabeth line to Canary Wharf', duration: 'about 25m', source: 'suggested' },
     { id: 'wed-lunch-spitalfields__wed-kingscross', from: 'wed-lunch-spitalfields', to: 'wed-kingscross', route: 'Walk to Liverpool Street, then Elizabeth line to Farringdon and Thameslink one stop to St Pancras, or a taxi', duration: 'about 25m', source: 'suggested' },
     { id: 'fri-lunch-battersea__fri-crate', from: 'fri-lunch-battersea', to: 'fri-crate', route: 'Taxi, or Overground from Clapham Junction to Hackney Wick', duration: 'about 50m', source: 'suggested' },
