@@ -1,0 +1,14 @@
+{
+  "name": "Slush week",
+  "short_name": "Slush week",
+  "description": "Schedule, travel and open items for Slush week, 16–20 November 2026",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E2E6ED",
+  "theme_color": "#E2E6ED",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
