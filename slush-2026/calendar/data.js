@@ -56,6 +56,9 @@ window.FRONTIER_DATA = {
       description: 'Optional. Time not confirmed.', actions: [], attendees: [], tbc: ['david'] },
 
     /* Wednesday */
+    { id: 'wed-startup-1030', day: 'wed', start: '10:30', end: '10:55', kind: 'session', status: 'tbc',
+      title: 'Startup meeting (pending)', short: 'Startup (pending)', venue: 'Slush', address: 'Messukeskus, Messuaukio 1, Helsinki', area: 'Slush',
+      description: 'Requested through the Slush platform. Not yet accepted. Ends five minutes before the meetup.', actions: ['Confirm once the request is accepted'], attendees: ['david'], tbc: ['Acceptance'] },
     { id: 'wed-agentic', day: 'wed', start: '11:00', end: '12:00', kind: 'session', status: 'confirmed',
       title: 'Agentic Infrastructure meetup', short: 'Agentic meetup', venue: 'Partner Pod, Slush', address: 'Messukeskus, Messuaukio 1, Helsinki', area: 'Slush',
       description: 'You are hosting this with a colleague.', actions: [], attendees: ['david'], tbc: [] },
