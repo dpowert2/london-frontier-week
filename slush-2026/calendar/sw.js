@@ -1,7 +1,7 @@
 /* Offline shell for Slush week.
    Network first, cache fallback: online users always get the latest data.js;
    offline users (on the Tube, say) get the last version they loaded. */
-const CACHE = 'slush-week-v6';
+const CACHE = 'slush-week-v7';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './store.js', './data.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

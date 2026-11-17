@@ -84,15 +84,15 @@ window.FRONTIER_DATA = {
       description: 'Partner side event.', actions: [], attendees: ['david'], tbc: [] },
     { id: 'wed-farouge', day: 'wed', start: '18:00', end: '19:30', kind: 'social', status: 'confirmed',
       title: 'Farouge', short: 'Farouge', venue: 'Farouge', address: 'Yrjönkatu 6, Helsinki',
-      description: 'All-welcome team event.', actions: [], attendees: ['david'], tbc: [] },
+      description: 'All-welcome team event. Leave by about 18:40 to reach the Start2 Group dinner for 19:00.', actions: [], attendees: ['david'], tbc: [] },
     { id: 'wed-lp', day: 'wed', start: '19:00', end: '22:00', kind: 'social', status: 'confirmed',
       title: 'L&P drinks', short: 'L&P drinks', venue: 'Gillet',
-      description: 'All-welcome event. Needs an Eventbrite registration.',
-      actions: ['Register on Eventbrite'], attendees: ['david'], tbc: [] },
-    { id: 'wed-beyond', day: 'wed', start: '19:00', end: '22:00', kind: 'social', status: 'tbc',
-      title: 'Beyond the Stage', short: 'Beyond the Stage', venue: 'Marga',
-      description: 'Hosted by Start2 Group. Runs at the same time as L&P drinks.',
-      actions: ['RSVP, or tell Start2 Group you are not coming'], attendees: [], tbc: ['david'] },
+      description: 'All-welcome event. You are at the Start2 Group dinner at the same time, so you are not down for this.',
+      actions: [], attendees: [], tbc: [] },
+    { id: 'wed-beyond', day: 'wed', start: '19:00', end: '22:00', kind: 'social', status: 'confirmed',
+      title: 'Start2 Group dinner: Beyond the Stage', short: 'Start2 dinner', venue: 'Marga',
+      description: 'Confirmed for 19:00. Hosted by Start2 Group.',
+      actions: [], attendees: ['david'], tbc: [] },
 
     /* Thursday */
     { id: 'thu-agentic', day: 'thu', start: '11:00', end: '12:00', kind: 'session', status: 'confirmed',
@@ -131,8 +131,8 @@ window.FRONTIER_DATA = {
   markers: [],
 
   issues: [
-    { id: 'issue-01', day: 'wed', severity: 'critical', source: 'team', title: 'Wednesday evening clash',
-      text: 'Beyond the Stage and L&P drinks both run 19:00 to 22:00, and Farouge overlaps Mastercard Lighthouse. Choose, and tell Start2 Group if you drop Beyond the Stage.' },
+    { id: 'issue-01', day: 'wed', severity: 'warning', source: 'team', title: 'Wednesday evening clash',
+      text: 'The Start2 Group dinner is confirmed for 19:00, so L&P drinks drop out. Mastercard Lighthouse (17:00 to 20:00) and Farouge (18:00 to 19:30) still overlap each other and both run past 19:00. Pick one for the hour before dinner.' },
     { id: 'issue-02', day: 'tue', severity: 'warning', source: 'team', title: 'Partner Dinner seat',
       text: 'You are at the L&P dinner tonight from about 19:00, which overlaps the Slush Partner Dinner at Sipuli. Pass the seat to a colleague or release it.' },
     { id: 'issue-03', day: 'tue', severity: 'check', source: 'team', title: 'Tuesday evening start times',
@@ -144,9 +144,9 @@ window.FRONTIER_DATA = {
     { id: 'issue-06', day: 'thu', severity: 'check', source: 'team', title: 'Agentic Infrastructure meetup on both days',
       text: 'It appears on Wednesday and Thursday in the team sheet. Confirm that is right.' },
     { id: 'issue-07', day: 'wed', severity: 'warning', source: 'team', title: 'Outstanding RSVPs',
-      text: 'Beyond the Stage, Fellows Slush Wrap, and the Eventbrite registration for L&P drinks.' },
+      text: 'Fellows Slush Wrap.' },
     { id: 'issue-08', day: 'wed', severity: 'warning', source: 'team', title: 'Startup meeting requests',
-      text: 'Six slots on Wednesday afternoon and two on Thursday are open. No requests have been sent from the shortlist yet.' }
+      text: 'Four requests are out and not yet accepted: Wednesday 10:30, 14:30 and 15:00, and Thursday 15:30. Wednesday 13:30, 14:00, 15:30 and 16:00 and Thursday 16:00 are still open.' }
   ],
 
   dining: [
